@@ -38,3 +38,4 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findAccessibleProjectById(@Param("projectId") Long projectId,
                                                 @Param("userId") Long userId);
 }
+
