@@ -18,9 +18,8 @@ import java.util.Date;
 @Component
 public class AuthUtil {
 
-    // JWT secret key from application properties
     @Value("${jwt.secret-key}")
-    private String jwtSecretKey;
+    private String jwtSecretKey; // Shared secret used to sign/verify JWTs
 
     // Method to get the SecretKey object from the secret string
     private SecretKey getSecretKey() {
@@ -42,20 +41,20 @@ public class AuthUtil {
         Claims claims = Jwts.parser()
                 .verifyWith(getSecretKey())  // Set the secret key for verification
                 .build()
-                .parseClaimsJws(token) // Parse the token
+                .parseSignedClaims(token) // Parse the token
                 .getPayload();
 
         Long userId = Long.parseLong(claims.get("userId", String.class)); // Extract user ID from claims
         String username = claims.getSubject(); // Extract username from subject
 
-        return new JwtUserPrincipal(userId, username, new ArrayList<>());
+        return new JwtUserPrincipal(userId, username, new ArrayList<>()); // Build principal with empty authorities for now
     }
 
     public Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof JwtUserPrincipal)) {
-            throw new AuthenticationCredentialsNotFoundException("No JWT Found");
+            throw new AuthenticationCredentialsNotFoundException("No JWT Found"); // Enforce presence of authenticated principal
         }
         return ((JwtUserPrincipal) authentication.getPrincipal()).userId();
     }

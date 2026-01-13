@@ -17,11 +17,11 @@ import java.util.List;
 @RequestMapping("/api/projects/{projectId}/members")
 public class ProjectMemberController {
 
-    private final ProjectMemberService projectMemberService;
+    private final ProjectMemberService projectMemberService; // Handles invites, role changes, and removals with access checks
 
     @GetMapping
     public ResponseEntity<List<MemberResponse>> getProjectMember(@PathVariable Long projectId){
-        return ResponseEntity.ok(projectMemberService.getProjectMembers(projectId));
+        return ResponseEntity.ok(projectMemberService.getProjectMembers(projectId)); // List members for a project
     }
 
     @PostMapping
@@ -30,7 +30,7 @@ public class ProjectMemberController {
         @RequestBody @Valid InviteMemberRequest request
     ){
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                projectMemberService.inviteMember(projectId, request)
+                projectMemberService.inviteMember(projectId, request) // Create/invite a new project member
         );
     }
 
@@ -40,12 +40,12 @@ public class ProjectMemberController {
             @PathVariable Long memberId,
             @RequestBody @Valid UpdateMemberRoleRequest request
     ){
-        return ResponseEntity.ok(projectMemberService.updateMemberRole(projectId, memberId, request));
+        return ResponseEntity.ok(projectMemberService.updateMemberRole(projectId, memberId, request)); // Adjust member permissions via role change
     }
 
     @DeleteMapping("/{memberId}")
     public ResponseEntity<Void> removeMember(@PathVariable Long projectId, @PathVariable Long memberId){
-        projectMemberService.removeProjectMember(projectId, memberId);
+        projectMemberService.removeProjectMember(projectId, memberId); // Remove member from project
         return ResponseEntity.noContent().build();
     }
 }

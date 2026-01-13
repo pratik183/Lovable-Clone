@@ -10,9 +10,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
 
-    ProjectResponse toProjectResponse(Project project);
+    ProjectResponse toProjectResponse(Project project); // Full project detail mapping
 
-    ProjectSummaryResponse toProjectSummaryResponse(Project project);
+    ProjectSummaryResponse toProjectSummaryResponse(Project project); // Lightweight summary mapping
 
-    List<ProjectSummaryResponse> toListOfProjectSummaryResponse(List<Project> projects);
+    List<ProjectSummaryResponse> toListOfProjectSummaryResponse(List<Project> projects); // Bulk map list to summaries
 }

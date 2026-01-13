@@ -17,20 +17,20 @@ import java.util.List;
 @RequestMapping("/api/projects/{projectId}/files")
 public class FileController {
 
-    private final FileService fileService;
+    private final FileService fileService; // Provides file tree and content access with authorization checks
 
     @GetMapping
     public ResponseEntity<List<FileNode>> getFileTree(@PathVariable Long projectId){
-        Long userId = 1L;
-        return ResponseEntity.ok(fileService.getFileTree(projectId,userId));
+        Long userId = 1L; // TODO: pull from auth principal
+        return ResponseEntity.ok(fileService.getFileTree(projectId,userId)); // Return project file hierarchy
     }
 
-    @GetMapping("/{*path}") // *path as i can get /src/hook/abc...
+    @GetMapping("/{*path}") // *path allows nested paths like /src/hooks/app.ts
     public ResponseEntity<FileContentResponse> getFile(
             @PathVariable Long projectId,
             @PathVariable String path
     ){
-        Long userId = 1L;
-        return ResponseEntity.ok(fileService.getFileContent(projectId,path,userId));
+        Long userId = 1L; // TODO: pull from auth principal
+        return ResponseEntity.ok(fileService.getFileContent(projectId,path,userId)); // Return file content with access validation
     }
 }

@@ -32,14 +32,14 @@ public class AuthSerivceImpl implements AuthService {
     @Override
     public AuthResponse signup(SignupRequest request) {
         userRepository.findByUsername(request.username()).ifPresent(user -> {
-            throw new BadRequestException("Username is already in use with username: " + request.username());
+            throw new BadRequestException("Username is already in use with username: " + request.username()); // Enforce unique usernames
         });
 
         User user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setPassword(passwordEncoder.encode(request.password())); // Store hashed password
         userRepository.save(user);
 
-        String token = authUtil.generateAccessToken(user);
+        String token = authUtil.generateAccessToken(user); // Issue JWT for immediate login
         return new AuthResponse(token, userMapper.toUserProfileResponse(user));
     }
 
@@ -47,11 +47,11 @@ public class AuthSerivceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password()) // Authenticate the user
+                new UsernamePasswordAuthenticationToken(request.username(), request.password()) // Validate credentials via configured providers
         );
 
-        User user = (User) authentication.getPrincipal(); // Cast to your User entity
+        User user = (User) authentication.getPrincipal(); // AuthManager returns our User as principal
         String token = authUtil.generateAccessToken(user);
-        return new AuthResponse(token, userMapper.toUserProfileResponse(user)); // Return AuthResponse with token and user profile
+        return new AuthResponse(token, userMapper.toUserProfileResponse(user)); // Return token + profile for client session
     }
 }

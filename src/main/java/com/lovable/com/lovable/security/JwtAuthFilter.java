@@ -18,18 +18,18 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final AuthUtil authUtil;
+    private final AuthUtil authUtil; // Verifies JWT and builds principal
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         log.info("incoming request: {} {}", request.getMethod(), request.getRequestURI());
 
-        final String requestHeaderToken = request.getHeader("Authorization"); // Bearer <token>
+        final String requestHeaderToken = request.getHeader("Authorization"); // Expecting "Bearer <token>"
         log.info("Authorization header: {}", requestHeaderToken);
 
         if(requestHeaderToken == null || !requestHeaderToken.startsWith("Bearer")) {
-            filterChain.doFilter(request, response); // Continue filter chain
+            filterChain.doFilter(request, response); // No JWT: continue without authentication
             log.warn("No Authorization header present in the request");
             return;
         }
@@ -37,13 +37,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Extract JWT token Authorization: "Bearer <token>"
         String jwtToken = requestHeaderToken.split("Bearer ")[1];
 
-        JwtUserPrincipal user = authUtil.verifyAccessToken(jwtToken);
+        JwtUserPrincipal user = authUtil.verifyAccessToken(jwtToken); // Validate and parse JWT
 
         if(user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user, null, user.authorities()
             );
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken); // Set authentication in context
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken); // Populate security context
         }
 
         filterChain.doFilter(request, response); // Continue filter chain

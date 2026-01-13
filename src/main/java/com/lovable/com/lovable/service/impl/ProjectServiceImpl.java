@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -42,18 +43,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
-//        User owner = userRepository.findById(userId).orElseThrow(
-//                ()-> new ResourceNotFoundException("User", userId.toString())
-//        );
-
-        User owner = userRepository.getReferenceById(userId); // Use getReferenceById for a proxy reference
+        // User owner = userRepository.findById(userId)... // Alternative eager fetch
+        User owner = userRepository.getReferenceById(userId); // Proxy reference avoids extra select
 
         Project project = Project.builder()
                 .name(request.name())
                 .isPublic(false)
                 .build();
 
-        project = projectRepository.save(project);
+        project = projectRepository.save(project); // Persist project first to get id
 
         ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
         ProjectMember projectMember = ProjectMember.builder()
@@ -64,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .invitedAt(Instant.now())
                 .project(project)
                 .build();
-       projectMemberRepository.save(projectMember);
+       projectMemberRepository.save(projectMember); // Link owner as member with OWNER role
 
        return projectMapper.toProjectResponse(project);
     }
@@ -72,27 +70,23 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectSummaryResponse> getUserProjects() {
         Long userId = authUtil.getCurrentUserId();
-
-//        return projectRepository.findAllAccessibleByUser(userId)
-//                .stream()
-//                .map(projectMapper::toProjectSummaryResponse)
-//                .collect(Collectors.toList());
-
-        var projects = projectRepository.findAllAccessibleByUser(userId);
-        return projectMapper.toListOfProjectSummaryResponse(projects);
+        var projects = projectRepository.findAllAccessibleByUser(userId); // Access-checked query
+        return projectMapper.toListOfProjectSummaryResponse(projects); // Map to lightweight summaries
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long id) {
+    @PreAuthorize("@security.canViewProject(#projectId)")
+    public ProjectResponse getUserProjectById(Long projectId) {
         Long userId = authUtil.getCurrentUserId();
-        Project project = getAccessibleProjectById(id, userId);
+        Project project = getAccessibleProjectById(projectId, userId); // Enforce access at service level too
         return projectMapper.toProjectResponse(project);
     }
 
     @Override
-    public ProjectResponse updateProject(Long id, ProjectRequest request) {
+    @PreAuthorize("@security.canEditProject(#projectId)")
+    public ProjectResponse updateProject(Long projectId, ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
-        Project project = getAccessibleProjectById(id, userId);
+        Project project = getAccessibleProjectById(projectId, userId); // Only allow updates if accessible
 
         project.setName(request.name());
         project = projectRepository.save(project);
@@ -101,11 +95,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void softDelete(Long id) {
+    @PreAuthorize("@security.canDeleteProject(#projectId)")
+    public void softDelete(Long projectId) {
         Long userId = authUtil.getCurrentUserId();
-        Project project = getAccessibleProjectById(id, userId);
+        Project project = getAccessibleProjectById(projectId, userId); // Ensure owner/member can delete
 
-        project.setDeletedAt(Instant.now());
+        project.setDeletedAt(Instant.now()); // Soft delete preserves data
         projectRepository.save(project);
     }
 
@@ -113,6 +108,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     public Project getAccessibleProjectById(Long projectId, Long userId) {
         return projectRepository.findAccessibleProjectById(projectId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Project", projectId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("Project", projectId.toString())); // Centralized access + not-found handling
     }
 }

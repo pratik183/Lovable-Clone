@@ -10,6 +10,6 @@ import java.util.List;
 public class PlanServiceImpl implements PlanService {
     @Override
     public List<PlanResponse> getAllActivePlans() {
-        return List.of();
+        return List.of(); // TODO: fetch active plans from database or billing provider
     }
 }

@@ -16,15 +16,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    UserRepository userRepository;
+    UserRepository userRepository; // Persistence for user entities
 
     @Override
     public UserProfileResponse getProfile(Long userId) {
-        return null;
+        return null; // TODO: map stored user data to profile response for given id
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)); // Used by Spring Security during authentication
     }
 }

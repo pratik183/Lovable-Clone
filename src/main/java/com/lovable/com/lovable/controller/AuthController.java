@@ -20,23 +20,23 @@ import org.springframework.web.context.annotation.RequestScope;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AuthController {
 
-    AuthService authService;
-    UserService userService;
+    AuthService authService; // Handles signup/login flows and token issuance
+    UserService userService; // Reads user profile information
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@RequestBody SignupRequest request){
-        return ResponseEntity.ok(authService.signup(request));
+        return ResponseEntity.ok(authService.signup(request)); // Register new user and return auth tokens
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> signup(@RequestBody LoginRequest request){
-        return ResponseEntity.ok(authService.login(request));
+        return ResponseEntity.ok(authService.login(request)); // Authenticate existing user and return auth tokens
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getProfile(){
-        Long userId = 1L;
-        return ResponseEntity.ok(userService.getProfile(userId));
+        Long userId = 1L; // TODO: replace with authenticated user id when security is wired
+        return ResponseEntity.ok(userService.getProfile(userId)); // Fetch current user's profile
     }
 
 }
