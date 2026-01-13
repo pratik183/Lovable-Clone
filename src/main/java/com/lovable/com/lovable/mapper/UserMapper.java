@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    User toEntity(SignupRequest signupRequest);
+    User toEntity(SignupRequest signupRequest); // Convert signup DTO to User entity
 
-    UserProfileResponse toUserProfileResponse(User user);
+    UserProfileResponse toUserProfileResponse(User user); // Convert User entity to profile response
 }

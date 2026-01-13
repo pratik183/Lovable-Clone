@@ -11,11 +11,11 @@ public interface ProjectMemberMapper {
 
     @Mapping(target = "userId", source = "id")
     @Mapping(target = "projectRole", constant = "OWNER")
-    MemberResponse toProjectMemberResponseFromOwner(User owner);
+    MemberResponse toProjectMemberResponseFromOwner(User owner); // Build owner response when creating project
 
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "username", source = "user.username")
     @Mapping(target = "name", source = "user.name")
-    MemberResponse toProjectMemberResponseFromMember(ProjectMember projectMember);
+    MemberResponse toProjectMemberResponseFromMember(ProjectMember projectMember); // Map membership entity to DTO
 
 }

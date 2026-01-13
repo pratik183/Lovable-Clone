@@ -18,7 +18,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                 AND EXISTS (
                     SELECT 1 FROM ProjectMember pm
                     WHERE pm.user.id = :userId
-                        AND pm.id.project = p.id
+                        AND pm.project.id = p.id
                 )
             ORDER BY p.updatedAt DESC
             """
@@ -32,10 +32,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                 AND EXISTS (
                     SELECT 1 FROM ProjectMember pm
                     WHERE pm.user.id = :userId
-                        AND pm.id.project = :projectId
+                        AND pm.project.id = :projectId
                 )
             """)
     Optional<Project> findAccessibleProjectById(@Param("projectId") Long projectId,
                                                 @Param("userId") Long userId);
 }
-

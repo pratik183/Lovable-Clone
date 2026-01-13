@@ -6,9 +6,9 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.List;
 
 public record JwtUserPrincipal(
-        Long userId,
-        String username,
-        List<GrantedAuthority> authorities
+        Long userId, // Internal user id from token
+        String username, // Username from token subject
+        List<GrantedAuthority> authorities // Granted authorities (currently empty)
 ){
 
 }

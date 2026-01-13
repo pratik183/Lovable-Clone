@@ -11,16 +11,16 @@ import org.springframework.stereotype.Service;
 public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public SubscriptionResponse getCurrentSubscription(Long userId) {
-        return null;
+        return null; // TODO: load current subscription for user (plan, status, renewals)
     }
 
     @Override
     public CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request, Long userId) {
-        return null;
+        return null; // TODO: integrate with billing provider (e.g., Stripe) to create checkout session
     }
 
     @Override
     public PortalResponse openCustomerPortal(Long userId) {
-        return null;
+        return null; // TODO: return billing portal URL for self-service subscription management
     }
 }

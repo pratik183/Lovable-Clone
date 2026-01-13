@@ -11,11 +11,11 @@ import java.util.List;
 public class FileServiceImpl implements FileService {
     @Override
     public List<FileNode> getFileTree(Long projectId, Long userId) {
-        return List.of();
+        return List.of(); // TODO: implement file tree retrieval with access checks
     }
 
     @Override
     public FileContentResponse getFileContent(Long projectId, String path, Long userId) {
-        return null;
+        return null; // TODO: load file content from storage after validating project access
     }
 }
