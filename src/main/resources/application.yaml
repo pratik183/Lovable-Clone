@@ -17,14 +17,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format-sql: true
+# add jwt secret key
 
-jwt:
-  secret-key: YOUR_SECRET_KEY
-
-stripe:
-  api:
-    secret: YOUR_STRIPE_SECRET_KEY
-  webhook:
-    secret: YOUR_WEBHOOK_SECRET_KEY
+#add stripe api, webhook secret
 
 client.url: http://localhost:8080
