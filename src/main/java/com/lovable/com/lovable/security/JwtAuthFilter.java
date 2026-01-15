@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -19,16 +20,17 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final AuthUtil authUtil; // Verifies JWT and builds principal
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+    try {
         log.info("incoming request: {} {}", request.getMethod(), request.getRequestURI());
 
         final String requestHeaderToken = request.getHeader("Authorization"); // Expecting "Bearer <token>"
         log.info("Authorization header: {}", requestHeaderToken);
 
-        if(requestHeaderToken == null || !requestHeaderToken.startsWith("Bearer")) {
+        if (requestHeaderToken == null || !requestHeaderToken.startsWith("Bearer")) {
             filterChain.doFilter(request, response); // No JWT: continue without authentication
             log.warn("No Authorization header present in the request");
             return;
@@ -39,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         JwtUserPrincipal user = authUtil.verifyAccessToken(jwtToken); // Validate and parse JWT
 
-        if(user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user, null, user.authorities()
             );
@@ -47,7 +49,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response); // Continue filter chain
-
+    } catch (Exception e) {
+        // Handled exceptions releated to JWT and authentication
+        handlerExceptionResolver.resolveException(request, response, null, e);
+    }
 
 
     }

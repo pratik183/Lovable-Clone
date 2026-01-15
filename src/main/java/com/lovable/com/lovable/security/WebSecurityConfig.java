@@ -26,7 +26,7 @@ public class WebSecurityConfig {
                 .csrf(csrfConfig -> csrfConfig.disable()) // Disable CSRF for stateless APIs
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Allow unauthenticated access to auth endpoints
+                        .requestMatchers("/api/auth/**", "/webhooks/**").permitAll() // Allow unauthenticated access to auth endpoints and webhooks as generally they are public only
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Apply JWT validation before username/password filter
