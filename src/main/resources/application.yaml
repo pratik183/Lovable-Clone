@@ -19,7 +19,7 @@ spring:
         format-sql: true
 
 jwt:
-  secret-key: ajkgafkjawnfasdjfawjk89rw3ekngrwvkjnfakjdfnawkejfn
+  secret-key: YOUR_SECRET_KEY
 
 stripe:
   api:
