@@ -23,8 +23,8 @@ jwt:
 
 stripe:
   api:
-    secret: sk_test_51SpDv737ewMWNPsxG87OzkgcE1Vm9pLiLNUbnSRRSFahpkGBEhLCdRtHgmrX65CI6EP3hlerEDKtnZToVsNcWx1G00kZ0ROymV
+    secret: YOUR_STRIPE_SECRET_KEY
   webhook:
-    secret: whsec_571222e8698d8344d06d0e6acbd8fdc3b62d110352fe92b96ecb6e3b5b86f6f2
+    secret: YOUR_WEBHOOK_SECRET_KEY
 
 client.url: http://localhost:8080
